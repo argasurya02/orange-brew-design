@@ -4,7 +4,7 @@ import { ShoppingCart } from 'lucide-react';
 import { BottomNav } from '@/components/BottomNav';
 import { ProductCard } from '@/components/ProductCard';
 import { CategoryFilter } from '@/components/CategoryFilter';
-import { PromoBanner } from '@/components/PromoBanner';
+import { PromoCarousel } from '@/components/PromoCarousel';
 import { products } from '@/data/products';
 import { useCart } from '@/context/CartContext';
 import { Category } from '@/types';
@@ -49,10 +49,10 @@ const Index = () => {
       </header>
 
       <main className="px-4 max-w-md mx-auto space-y-6">
-        {/* Promo Banner */}
+        {/* Promo Carousel */}
         <section>
           <h2 className="text-foreground font-semibold mb-3">Promo Hari Ini</h2>
-          <PromoBanner />
+          <PromoCarousel />
         </section>
 
         {/* Categories */}
