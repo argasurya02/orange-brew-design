@@ -6,16 +6,27 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
     try {
         if (!req.user) return res.status(401).json({ message: 'Unauthorized' });
 
-        const { orderType, items } = req.body;
-        // items: [{ productId, quantity }]
+        // When using multer, body fields are strings
+        const { orderType, paymentMethod } = req.body;
+        let items = [];
+        try {
+            items = JSON.parse(req.body.items);
+        } catch (e) {
+            return res.status(400).json({ message: 'Invalid items format' });
+        }
 
         if (!items || items.length === 0) {
             return res.status(400).json({ message: 'No items in order' });
         }
 
+        // Check for receipt if TRANSFER or QRIS
+        if ((paymentMethod === 'TRANSFER' || paymentMethod === 'QRIS') && !req.file) {
+            return res.status(400).json({ message: 'Proof of payment is required for Transfer/QRIS' });
+        }
+
         // Calculate total price and verify products
         let totalPrice = 0;
-        const orderItemsData = [];
+        const orderItemsData: { productId: number; quantity: number; price: number }[] = [];
 
         for (const item of items) {
             const product = await prisma.product.findUnique({ where: { id: item.productId } });
@@ -30,24 +41,37 @@ export const createOrder = async (req: AuthRequest, res: Response) => {
             });
         }
 
-        const order = await prisma.order.create({
-            data: {
-                userId: req.user.userId,
-                orderType,
-                status: 'PENDING',
-                totalPrice,
-                orderItems: {
-                    create: orderItemsData
+        // Transaction: Create Order and Payment
+        const result = await prisma.$transaction(async (prisma) => {
+            // 1. Create Order
+            const order = await prisma.order.create({
+                data: {
+                    userId: req.user!.userId,
+                    orderType,
+                    status: 'PENDING',
+                    totalPrice,
+                    orderItems: {
+                        create: orderItemsData
+                    }
                 }
-            },
-            include: {
-                orderItems: {
-                    include: { product: true }
+            });
+
+            // 2. Create Payment
+            const payment = await prisma.payment.create({
+                data: {
+                    userId: req.user!.userId,
+                    orderId: order.id,
+                    amount: Math.round(totalPrice), // Store as Int? Schema says Int. Handle decimals if needed.
+                    method: paymentMethod,
+                    status: 'PENDING',
+                    receiptUrl: req.file ? `/uploads/${req.file.filename}` : null
                 }
-            }
+            });
+
+            return { order, payment };
         });
 
-        res.status(201).json(order);
+        res.status(201).json(result);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Error creating order', error });
