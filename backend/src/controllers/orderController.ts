@@ -96,7 +96,8 @@ export const getOrders = async (req: AuthRequest, res: Response) => {
                 user: { select: { id: true, name: true, email: true } },
                 orderItems: {
                     include: { product: true }
-                }
+                },
+                payment: true
             },
             orderBy: { createdAt: 'desc' }
         });

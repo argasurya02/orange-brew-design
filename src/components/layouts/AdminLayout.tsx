@@ -9,7 +9,8 @@ import {
     LogOut,
     Menu,
     X,
-    ArrowLeft
+    ArrowLeft,
+    CreditCard
 } from 'lucide-react';
 
 import { useState } from 'react';
@@ -29,6 +30,7 @@ const AdminLayout = () => {
         { path: '/', label: 'Back to App', icon: <ArrowLeft size={20} />, },
         { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
         { path: '/admin/orders', label: 'Orders', icon: <ShoppingBag size={20} /> },
+        { path: '/admin/payments', label: 'Payments', icon: <CreditCard size={20} /> },
         { path: '/admin/products', label: 'Products', icon: <Coffee size={20} />, role: 'ADMIN' },
         { path: '/admin/users', label: 'Users', icon: <Users size={20} />, role: 'ADMIN' },
 

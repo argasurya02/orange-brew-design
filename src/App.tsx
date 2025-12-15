@@ -15,6 +15,7 @@ import Dashboard from './pages/admin/Dashboard';
 import AdminOrders from './pages/admin/AdminOrders';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminUsers from './pages/admin/AdminUsers';
+import AdminPayments from './pages/admin/AdminPayments';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -70,6 +71,7 @@ const App = () => (
               }>
                 <Route index element={<Dashboard />} />
                 <Route path="orders" element={<AdminOrders />} />
+                <Route path="payments" element={<AdminPayments />} />
                 <Route path="products" element={
                   <ProtectedRoute roles={['ADMIN']}>
                     <AdminProducts />

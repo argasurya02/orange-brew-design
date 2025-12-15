@@ -25,6 +25,17 @@ export interface Order {
         quantity: number;
         price: number;
     }[];
+    payment?: {
+        id: string;
+        method: 'CASH' | 'TRANSFER' | 'QRIS';
+        status: 'PENDING' | 'CONFIRMED' | 'REJECTED';
+        amount: number;
+        receiptUrl?: string;
+    };
+    user: {
+        name: string;
+        email: string;
+    };
     createdAt: string;
 }
 
