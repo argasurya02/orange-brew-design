@@ -56,4 +56,16 @@ export const orderService = {
         });
         return handleResponse(response);
     },
+
+    updateStatus: async (id: number, status: string): Promise<Order> => {
+        const response = await fetch(`${API_URL}/orders/${id}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders(),
+            },
+            body: JSON.stringify({ status }),
+        });
+        return handleResponse(response);
+    },
 };

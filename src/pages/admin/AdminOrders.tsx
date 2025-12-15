@@ -1,114 +1,138 @@
 import { useEffect, useState } from 'react';
 import { orderService, Order } from '@/services/orders';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useAuth } from '@/context/AuthContext';
-import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { getAuthHeaders, API_URL, handleResponse } from '@/lib/api';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 const AdminOrders = () => {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const { user } = useAuth();
-
-    useEffect(() => {
-        if (user && (user.role === 'ADMIN' || user.role === 'CASHIER')) {
-            fetchOrders();
-        }
-    }, [user]);
 
     const fetchOrders = async () => {
         try {
             const data = await orderService.getAll();
             setOrders(data);
-        } catch (error) {
-            console.error('Failed to load orders', error);
+        } catch (err) {
+            toast.error('Failed to load orders');
         } finally {
             setLoading(false);
         }
     };
 
-    const updateStatus = async (orderId: number, newStatus: string) => {
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const handleStatusChange = async (orderId: number, status: string) => {
         try {
-            const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...getAuthHeaders()
-                },
-                body: JSON.stringify({ status: newStatus })
-            });
-            await handleResponse(response);
-            // Refresh or update locally
-            setOrders(orders.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-        } catch (error) {
-            console.error('Failed to update status', error);
-            alert('Failed to update status');
+            await orderService.updateStatus(orderId, status);
+            toast.success('Order status updated');
+            fetchOrders();
+        } catch (err) {
+            toast.error('Failed to update status');
         }
     };
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'PENDING': return 'bg-yellow-500';
-            case 'COOKING': return 'bg-orange-500';
-            case 'READY': return 'bg-green-500';
-            case 'COMPLETED': return 'bg-blue-500';
-            case 'CANCELLED': return 'bg-red-500';
-            default: return 'bg-gray-500';
+            case 'PENDING': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            case 'COOKING': return 'bg-orange-100 text-orange-800 border-orange-200';
+            case 'READY': return 'bg-blue-100 text-blue-800 border-blue-200';
+            case 'COMPLETED': return 'bg-green-100 text-green-800 border-green-200';
+            case 'CANCELLED': return 'bg-red-100 text-red-800 border-red-200';
+            default: return 'bg-gray-100 text-gray-800';
         }
     };
 
-    if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin h-10 w-10 text-orange-500" /></div>;
+    if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin h-8 w-8 text-orange-600" /></div>;
 
     return (
-        <div className="container mx-auto py-8 px-4">
-            <h1 className="text-3xl font-bold mb-8">Order Management ({orders.length})</h1>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {orders.map((order: any) => (
-                    <Card key={order.id} className="border-l-4" style={{ borderLeftColor: order.status === 'PENDING' ? '#eab308' : '#e5e7eb' }}>
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 bg-slate-50">
-                            <div>
-                                <CardTitle className="text-lg">#{order.id} - {order.user?.name}</CardTitle>
-                                <p className="text-xs text-gray-500">{order.user?.email}</p>
-                            </div>
-                            <div className="flex gap-2">
-                                <Badge variant="outline">{order.orderType}</Badge>
-                                <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
-                            </div>
-                        </CardHeader>
-                        <CardContent className="mt-4">
-                            <div className="space-y-1 mb-4">
-                                {order.orderItems?.map((item: any, idx: number) => (
-                                    <div key={idx} className="flex justify-between text-sm">
-                                        <span>{item.quantity}x {item.product?.name}</span>
-                                        <span>${((item.price || 0) * item.quantity).toFixed(2)}</span>
-                                    </div>
-                                ))}
-                            </div>
+        <div className="space-y-6">
+            <div>
+                <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
+                <p className="text-gray-500">Manage and track customer orders.</p>
+            </div>
 
-                            <div className="flex justify-between font-bold border-t pt-2">
-                                <span>Total Price:</span>
-                                <span>${order.totalPrice.toFixed(2)}</span>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="bg-slate-50 pt-4 flex gap-2">
-                            <Select onValueChange={(val) => updateStatus(order.id, val)} defaultValue={order.status}>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Update Status" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="PENDING">Pending</SelectItem>
-                                    <SelectItem value="COOKING">Cooking</SelectItem>
-                                    <SelectItem value="READY">Ready</SelectItem>
-                                    <SelectItem value="COMPLETED">Completed</SelectItem>
-                                    <SelectItem value="CANCELLED">Cancelled</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </CardFooter>
-                    </Card>
-                ))}
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                <Table>
+                    <TableHeader className="bg-gray-50">
+                        <TableRow>
+                            <TableHead className="w-[100px]">Order ID</TableHead>
+                            <TableHead>Customer</TableHead>
+                            <TableHead>Type</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Items</TableHead>
+                            <TableHead>Total</TableHead>
+                            <TableHead>Date</TableHead>
+                            <TableHead className="text-right">Action</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {orders.map((order) => (
+                            <TableRow key={order.id}>
+                                <TableCell className="font-medium text-gray-900">#{order.id}</TableCell>
+                                <TableCell>
+                                    <div className="flex flex-col">
+                                        <span className="font-medium text-gray-900">{(order as any).user?.name}</span>
+                                        <span className="text-xs text-gray-500">{(order as any).user?.email}</span>
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline" className="bg-gray-50 text-gray-700">
+                                        {order.orderType}
+                                    </Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full border ${getStatusColor(order.status)}`}>
+                                        {order.status}
+                                    </span>
+                                </TableCell>
+                                <TableCell className="max-w-[200px] truncate text-gray-500 text-sm">
+                                    {order.orderItems?.map(i => `${i.quantity}x ${i.product?.name}`).join(', ')}
+                                </TableCell>
+                                <TableCell className="font-medium text-gray-900">
+                                    ${order.totalPrice.toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-gray-500 text-sm">
+                                    {new Date(order.createdAt).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Select
+                                        defaultValue={order.status}
+                                        onValueChange={(val) => handleStatusChange(order.id, val)}
+                                    >
+                                        <SelectTrigger className="w-[130px] h-8 ml-auto bg-white border-gray-200 text-xs">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="PENDING">Pending</SelectItem>
+                                            <SelectItem value="COOKING">Cooking</SelectItem>
+                                            <SelectItem value="READY">Ready</SelectItem>
+                                            <SelectItem value="COMPLETED">Completed</SelectItem>
+                                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </div>
         </div>
     );

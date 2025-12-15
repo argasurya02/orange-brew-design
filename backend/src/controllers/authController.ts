@@ -95,3 +95,46 @@ export const getAllUsers = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error fetching users', error });
     }
 };
+
+export const createUser = async (req: Request, res: Response) => {
+    try {
+        const { name, email, password, role } = req.body;
+        const existingUser = await prisma.user.findUnique({ where: { email } });
+        if (existingUser) return res.status(400).json({ message: 'Email already exists' });
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await prisma.user.create({
+            data: { name, email, password: hashedPassword, role }
+        });
+        res.status(201).json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error creating user', error });
+    }
+};
+
+export const updateUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { role } = req.body;
+        const user = await prisma.user.update({
+            where: { id: Number(id) },
+            data: { role }
+        });
+        res.json(user);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error updating user', error });
+    }
+};
+
+export const deleteUser = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        await prisma.user.delete({ where: { id: Number(id) } });
+        res.json({ message: 'User deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error deleting user', error });
+    }
+};
