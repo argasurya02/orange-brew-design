@@ -18,29 +18,62 @@ const CartPage = () => {
     }
 
     return (
-        <div className="container mx-auto p-4 max-w-2xl pb-24">
-            <h1 className="text-2xl font-display font-bold mb-6 text-primary">Your Cart</h1>
+        <div className="container mx-auto p-4 max-w-2xl pb-40 sm:pb-28">
+            {/* ↑ padding bawah supaya konten tidak ketutup checkout bar */}
+
+            <h1 className="text-2xl font-display font-bold mb-6 text-primary">
+                Your Cart
+            </h1>
+
             <div className="space-y-4">
                 {items.map((item) => (
                     <Card key={item.id} className="bg-card border-none shadow-soft">
                         <CardContent className="p-4 flex gap-4 items-center">
                             <div className="h-16 w-16 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
-                                <img src={item.image || 'https://placehold.co/100x100?text=Food'} alt={item.name} className="h-full w-full object-cover" />
+                                <img
+                                    src={item.image || 'https://placehold.co/100x100?text=Food'}
+                                    alt={item.name}
+                                    className="h-full w-full object-cover"
+                                />
                             </div>
+
                             <div className="flex-1">
                                 <h3 className="font-bold text-foreground">{item.name}</h3>
-                                <p className="text-primary font-semibold">${item.price.toFixed(2)}</p>
+                                <p className="text-primary font-semibold">
+                                    ${item.price.toFixed(2)}
+                                </p>
                             </div>
+
                             <div className="flex items-center gap-2 bg-secondary rounded-full p-1">
-                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-background" onClick={() => updateQuantity(item.id, -1)}>
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-8 w-8 rounded-full hover:bg-background"
+                                    onClick={() => updateQuantity(item.id, -1)}
+                                >
                                     <Minus className="h-3 w-3" />
                                 </Button>
-                                <span className="font-bold w-6 text-center text-sm">{item.quantity}</span>
-                                <Button size="icon" variant="ghost" className="h-8 w-8 rounded-full hover:bg-background" onClick={() => updateQuantity(item.id, 1)}>
+
+                                <span className="font-bold w-6 text-center text-sm">
+                                    {item.quantity}
+                                </span>
+
+                                <Button
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-8 w-8 rounded-full hover:bg-background"
+                                    onClick={() => updateQuantity(item.id, 1)}
+                                >
                                     <Plus className="h-3 w-3" />
                                 </Button>
                             </div>
-                            <Button size="icon" variant="ghost" className="text-muted-foreground hover:text-red-500" onClick={() => removeItem(item.id)}>
+
+                            <Button
+                                size="icon"
+                                variant="ghost"
+                                className="text-muted-foreground hover:text-red-500"
+                                onClick={() => removeItem(item.id)}
+                            >
                                 <Trash2 className="h-5 w-5" />
                             </Button>
                         </CardContent>
@@ -48,13 +81,23 @@ const CartPage = () => {
                 ))}
             </div>
 
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur border-t border-border">
+            {/* ✅ CHECKOUT BAR */}
+            <div className="fixed left-0 right-0 bottom-16 sm:bottom-0 z-40
+                            bg-background/80 backdrop-blur border-t border-border p-4">
+                {/* ↑ bottom-16 = naik dari navbar mobile */}
+
                 <div className="container max-w-2xl mx-auto flex flex-col gap-4">
                     <div className="flex justify-between items-center text-lg font-bold">
                         <span>Total</span>
-                        <span className="text-primary">${totalPrice.toFixed(2)}</span>
+                        <span className="text-primary">
+                            ${totalPrice.toFixed(2)}
+                        </span>
                     </div>
-                    <Button className="w-full text-lg h-12 font-bold" onClick={() => navigate('/checkout')}>
+
+                    <Button
+                        className="w-full text-lg h-12 font-bold"
+                        onClick={() => navigate('/checkout')}
+                    >
                         Proceed to Checkout
                     </Button>
                 </div>

@@ -95,13 +95,13 @@ const AdminPayments = () => {
                 </div>
             </div>
 
-            <div className="flex items-center gap-4 bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <Search className="text-gray-400" size={20} />
+            <div className="flex items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-300 shadow-sm">
+                <Search className="text-gray-500" size={20} />
                 <Input
                     placeholder="Search by Order ID or Customer..."
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="border-none shadow-none focus-visible:ring-0"
+                    className="border-none bg-transparent shadow-none focus-visible:ring-0 placeholder:text-gray-400"
                 />
             </div>
 
