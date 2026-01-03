@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { orderService, Order } from '@/services/orders';
+import { formatRupiah } from '@/lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, Package, Clock, CheckCircle, XCircle, ChefHat } from 'lucide-react';
@@ -92,13 +93,13 @@ const Orders = () => {
                         <span className="bg-secondary rounded px-2 py-0.5 text-xs font-bold text-muted-foreground">{item.quantity}x</span>
                         <span className="text-foreground">{item.product?.name || 'Item'}</span>
                       </div>
-                      <span className="text-muted-foreground">${((item.price || 0) * item.quantity).toFixed(2)}</span>
+                      <span className="text-muted-foreground">{formatRupiah((item.price || 0) * item.quantity)}</span>
                     </div>
                   ))}
                 </div>
                 <div className="border-t border-border mt-4 pt-3 flex justify-between font-bold text-lg">
                   <span>Total</span>
-                  <span className="text-primary">${order.totalPrice.toFixed(2)}</span>
+                  <span className="text-primary">{formatRupiah(order.totalPrice)}</span>
                 </div>
               </CardContent>
             </Card>
