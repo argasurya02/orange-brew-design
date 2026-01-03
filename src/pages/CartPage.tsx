@@ -2,6 +2,7 @@ import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Plus, Minus, Trash2 } from 'lucide-react';
+import { formatRupiah } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
 const CartPage = () => {
@@ -40,7 +41,7 @@ const CartPage = () => {
                             <div className="flex-1">
                                 <h3 className="font-bold text-foreground">{item.name}</h3>
                                 <p className="text-primary font-semibold">
-                                    ${item.price.toFixed(2)}
+                                    {formatRupiah(item.price)}
                                 </p>
                             </div>
 
@@ -90,7 +91,7 @@ const CartPage = () => {
                     <div className="flex justify-between items-center text-lg font-bold">
                         <span>Total</span>
                         <span className="text-primary">
-                            ${totalPrice.toFixed(2)}
+                            {formatRupiah(totalPrice)}
                         </span>
                     </div>
 

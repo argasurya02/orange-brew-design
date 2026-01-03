@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Upload } from 'lucide-react';
 import { toast } from 'sonner';
+import { formatRupiah } from '@/lib/utils';
 
 type PaymentMethod = 'CASH' | 'TRANSFER' | 'QRIS';
 
@@ -185,12 +186,12 @@ const Checkout = () => {
                   <span className="text-primary font-bold">{item.quantity}x</span>
                   <span>{item.name}</span>
                 </div>
-                <span className="font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
+                <span className="font-semibold">{formatRupiah(item.price * item.quantity)}</span>
               </div>
             ))}
             <div className="border-t border-border pt-4 flex justify-between items-center text-lg font-bold">
               <span>Total</span>
-              <span className="text-primary">${totalPrice.toFixed(2)}</span>
+              <span className="text-primary">{formatRupiah(totalPrice)}</span>
             </div>
           </CardContent>
         </Card>

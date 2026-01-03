@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { productService, Product } from '@/services/products';
+import { formatRupiah } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
     Table,
@@ -198,7 +199,7 @@ const AdminProducts = () => {
                                 </TableCell>
 
                                 <TableCell className="text-gray-700">
-                                    ${product.price.toFixed(2)}
+                                    {formatRupiah(product.price)}
                                 </TableCell>
 
                                 <TableCell className="max-w-[200px] truncate text-gray-500 text-sm">

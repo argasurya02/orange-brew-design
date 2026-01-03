@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatRupiah } from '@/lib/utils';
 import { orderService, Order } from '@/services/orders';
 import { Button } from '@/components/ui/button';
 import {
@@ -107,7 +108,7 @@ const AdminOrders = () => {
                                     {order.orderItems?.map(i => `${i.quantity}x ${i.product?.name}`).join(', ')}
                                 </TableCell>
                                 <TableCell className="font-medium text-gray-900">
-                                    ${order.totalPrice.toFixed(2)}
+                                    {formatRupiah(order.totalPrice)}
                                 </TableCell>
                                 <TableCell className="text-gray-500 text-sm">
                                     {new Date(order.createdAt).toLocaleDateString()}

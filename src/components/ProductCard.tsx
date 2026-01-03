@@ -1,5 +1,6 @@
 import { Product } from '@/services/products';
 import { useCart } from '@/context/CartContext';
+import { formatRupiah } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +46,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <span className="font-bold text-lg text-primary">${product.price.toFixed(2)}</span>
+          <span className="font-bold text-lg text-primary">{formatRupiah(product.price)}</span>
           <Button
             size="icon"
             className={`rounded-full shadow-lg ${clicked ? 'scale-90' : 'scale-100'} transition-transform`}

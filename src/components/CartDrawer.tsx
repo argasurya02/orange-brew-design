@@ -14,6 +14,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { orderService } from '@/services/orders';
 import { useAuth } from '@/context/AuthContext';
+import { formatRupiah } from '@/lib/utils';
 
 const CartDrawer = () => {
     const { items, removeItem, totalPrice, clearCart } = useCart();
@@ -36,8 +37,8 @@ const CartDrawer = () => {
                 quantity: item.quantity
             }));
 
-            // Defaulting to PICKUP for now, could be dynamic
-            await orderService.create('PICKUP', orderItems);
+            // Defaulting to PICKUP and CASH for now
+            await orderService.create('PICKUP', orderItems, 'CASH');
             clearCart();
             setOpen(false);
             navigate('/orders');
@@ -77,11 +78,11 @@ const CartDrawer = () => {
                                     onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/100?text=Food'; }} />}
                                 <div>
                                     <h4 className="font-semibold">{item.name}</h4>
-                                    <p className="text-sm text-gray-500">Qty: {item.quantity} x ${item.price}</p>
+                                    <p className="text-sm text-gray-500">Qty: {item.quantity} x {formatRupiah(item.price)}</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <p className="font-bold">${(item.price * item.quantity).toFixed(2)}</p>
+                                <p className="font-bold">{formatRupiah(item.price * item.quantity)}</p>
                                 <Button variant="ghost" size="sm" onClick={() => removeItem(item.id)}>
                                     <Trash2 className="h-4 w-4 text-red-500" />
                                 </Button>
@@ -93,7 +94,7 @@ const CartDrawer = () => {
                 <SheetFooter className="mt-4 flex-col gap-4 sm:flex-col">
                     <div className="flex justify-between w-full text-lg font-bold">
                         <span>Total:</span>
-                        <span>${totalPrice.toFixed(2)}</span>
+                        <span>{formatRupiah(totalPrice)}</span>
                     </div>
                     <Button className="w-full" disabled={items.length === 0 || loading} onClick={handleCheckout}>
                         {loading ? 'Processing...' : 'Checkout'}

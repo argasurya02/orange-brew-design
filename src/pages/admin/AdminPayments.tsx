@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { formatRupiah } from '@/lib/utils';
 import { orderService, Order } from '@/services/orders';
 import { paymentService } from '@/services/payments';
 import {
@@ -130,7 +131,7 @@ const AdminPayments = () => {
                                     <TableCell className="font-medium">#{order.id}</TableCell>
                                     <TableCell>{order.user.name}</TableCell>
                                     <TableCell className="capitalize">{order.payment!.method.toLowerCase()}</TableCell>
-                                    <TableCell>Rp {order.payment!.amount.toLocaleString()}</TableCell>
+                                    <TableCell>{formatRupiah(order.payment!.amount)}</TableCell>
                                     <TableCell>{getStatusBadge(order.payment!.status)}</TableCell>
                                     <TableCell className="text-right">
                                         <Button
@@ -174,7 +175,7 @@ const AdminPayments = () => {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <p className="text-xs text-gray-500 uppercase font-bold">Amount</p>
-                                    <p className="font-semibold">Rp {selectedPayment.amount.toLocaleString()}</p>
+                                    <p className="font-semibold">{formatRupiah(selectedPayment.amount)}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs text-gray-500 uppercase font-bold">Method</p>
